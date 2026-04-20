@@ -7,4 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- <ItemGroup>
+    <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
+  </ItemGroup> -->
+
+  <ItemGroup>
+    <Compile Remove="Core.Tests\**" />
+  </ItemGroup>
+
 </Project>
