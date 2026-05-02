@@ -1,5 +1,4 @@
 ﻿// Console.WriteLine("Hello, World!");
-using System;
 using Project.SyncTcpServer;
 
 class Program

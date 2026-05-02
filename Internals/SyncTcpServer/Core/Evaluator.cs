@@ -11,7 +11,7 @@ namespace core
             {
                 return new Exception("ERR wrong number of arguments for 'PING' command");
             }
-
+ 
             if (args.Length == 0)
             {
                 response = RespDecoder.Encode("PONG", true);

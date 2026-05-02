@@ -11,3 +11,7 @@ obj/
 # OS files
 .DS_Store
 Thumbs.db
+
+SyncTcpServer.sln
+packages-microsoft-prod.deb
+packages-microsoft-prod.deb.1
