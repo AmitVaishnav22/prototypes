@@ -1,23 +1,38 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Project.Config;
+using core;
 namespace Project.SyncTcpServer;
 
 public static class SyncTcpServer
 {
-    static string ReadCommand(NetworkStream stream)
+    static Rediscmd ReadCommand(NetworkStream stream)
     {
         byte[] buffer = new byte[1024];
         int bytesRead = stream.Read(buffer, 0, buffer.Length);
         if (bytesRead == 0)
             throw new Exception("EOF");
-        return Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
+
+        byte[] data = new byte[bytesRead];
+        Array.Copy(buffer, data, bytesRead);
+
+        var tokens = RespDecoder.DecodeArrayString(data);
+        Console.WriteLine($"Decoded command: {tokens[0].ToUpper()}, Arguments: {string.Join(", ", tokens.Skip(1))}");
+        return new Rediscmd(tokens[0].ToUpper(), tokens.Skip(1).ToArray());
     }
-    static void Respond(NetworkStream stream, string cmd)
+    static void Respond(Rediscmd cmd, NetworkStream stream)
     {
-        byte[] buffer = Encoding.UTF8.GetBytes(cmd + "\n");
+        var err = Evaluator.EvalAndRespond(cmd, stream);
+        if (err != null)
+            RespondError(stream, err);
+    }
+
+    static void RespondError(NetworkStream stream, Exception err)
+    {
+        byte[] buffer = Encoding.UTF8.GetBytes($"-{err.Message}\r\n");
         stream.Write(buffer, 0, buffer.Length);
     }
 
@@ -37,9 +52,9 @@ public static class SyncTcpServer
             {
                 try
                 {
-                    string cmd = ReadCommand(stream);
-                    Console.WriteLine($"Received command: {cmd}");
-                    Respond(stream, $"Echo: {cmd}");
+                    var cmd = ReadCommand(stream);
+                    Console.WriteLine($"Received command: {cmd.Cmd}");
+                    Respond(cmd, stream);
                 }
                 catch (Exception ex)
                 {

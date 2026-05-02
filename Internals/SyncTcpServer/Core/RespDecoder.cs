@@ -116,8 +116,56 @@ namespace core{
             {
                 return (null, new ArgumentException("Data cannot be null or empty."));
             }
+
+            char first = (char)data[0];
+            if (first != '+' && first != '-' && first != ':' && first != '$' && first != '*')
+            {
+                var text = Encoding.UTF8.GetString(data).Trim();
+                return (text, null);
+            }
+
             var (value,_,err)=DecodeOne(data);
             return (value,err);
+        }
+
+        public static string[] DecodeArrayString(byte[] data)
+        {
+            var (value, err) = Decode(data);
+            if (err != null)
+                throw err;
+
+            if (value is object[] arr)
+            {
+                var tokens = new string[arr.Length];
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    tokens[i] = arr[i]?.ToString() ?? string.Empty;
+                }
+                return tokens;
+            }
+
+            if (value is string text)
+            {
+                return text.Split(new[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            throw new ArgumentException("Invalid command format.");
+        }
+        public static byte[] Encode(object value, bool isSimple)
+        {
+            if (value is string str)
+            {
+                if (isSimple)
+                {
+                    return Encoding.UTF8.GetBytes($"+{str}\r\n");
+                }
+                else
+                {
+                    return Encoding.UTF8.GetBytes($"${str.Length}\r\n{str}\r\n");
+                }
+            }
+
+            return Array.Empty<byte>();
         }
     }
 }
