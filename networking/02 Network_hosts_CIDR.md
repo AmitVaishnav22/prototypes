@@ -1,4 +1,4 @@
-# Networks, Hosts & CIDR (Revision)
+# Networks, Hosts & CIDR
 
 ## Network
 - A collection of connected devices.
