@@ -1,0 +1,207 @@
+# UDP (User Datagram Protocol)
+
+## What is UDP?
+- UDP = User Datagram Protocol.
+- Transport Layer (Layer 4) protocol.
+- Connectionless.
+- Fast but unreliable.
+
+---
+
+# Characteristics
+
+- No connection establishment.
+- No acknowledgements (ACK).
+- No retransmissions.
+- No ordering of packets.
+- No flow control.
+- No congestion control.
+- Small header (8 bytes).
+
+---
+
+# UDP Header
+
+| Field | Size |
+|--------|------|
+| Source Port | 2 Bytes |
+| Destination Port | 2 Bytes |
+| Length | 2 Bytes |
+| Checksum | 2 Bytes |
+
+Total Header Size = **8 Bytes**
+
+---
+
+# Data Unit
+
+UDP → Datagram
+
+---
+
+# Advantages
+
+- Low latency
+- Low overhead
+- Faster than TCP
+- Suitable for real-time communication
+
+---
+
+# Disadvantages
+
+- Packet loss possible
+- Out-of-order delivery
+- No guarantee of delivery
+- No duplicate detection
+
+---
+
+# Common UDP Protocols
+
+| Protocol | Port |
+|----------|------|
+| DNS | 53 |
+| DHCP | 67, 68 |
+| NTP | 123 |
+| TFTP | 69 |
+| SNMP | 161 |
+| RTP (Voice/Video) | Dynamic |
+
+---
+
+# Packet Flow
+
+Application Data
+
+↓
+
+UDP Header
+
+↓
+
+IP Header
+
+↓
+
+Ethernet Header
+
+↓
+
+Bits
+
+---
+
+# DNS over UDP
+
+Browser / nslookup
+
+↓
+
+UDP Datagram
+
+↓
+
+Destination Port = 53
+
+↓
+
+DNS Server
+
+↓
+
+UDP Response
+
+---
+
+# DNS Transaction ID
+
+Purpose
+
+Matches
+
+Request ↔ Response
+
+Since UDP has no ACKs or connections, DNS uses a **Transaction ID** to identify which response belongs to which request.
+
+---
+
+# Wireshark
+
+Useful Filters
+
+DNS Traffic
+
+ip.dst==8.8.8.8 || ip.src==8.8.8.8
+
+or
+
+dns
+
+Inspect
+
+- Source IP
+- Destination IP
+- Source Port
+- Destination Port
+- UDP Length
+- Checksum
+- DNS Transaction ID
+
+---
+
+# Wireshark Layers
+
+Ethernet Frame
+
+↓
+
+IP Packet
+
+↓
+
+UDP Datagram
+
+↓
+
+DNS Payload
+
+---
+
+# Example
+
+Source IP
+
+192.168.1.10
+
+Destination IP
+
+8.8.8.8
+
+Source Port
+
+53124
+
+Destination Port
+
+53
+
+Transport
+
+UDP
+
+Application
+
+DNS
+
+---
+
+# Remember
+
+- UDP = Connectionless.
+- Header Size = 8 Bytes.
+- Data Unit = Datagram.
+- Faster than TCP.
+- No reliability.
+- DNS usually uses UDP.
+- DNS uses Transaction IDs to match responses.
