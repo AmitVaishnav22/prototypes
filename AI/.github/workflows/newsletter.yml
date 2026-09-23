@@ -1,0 +1,16 @@
+name: Send Update Notification
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger backend
+        run: |
+          curl -X POST "${{ secrets.BASE_URL }}/newsletter/github-release" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_WEBHOOK_SECRET }}"
