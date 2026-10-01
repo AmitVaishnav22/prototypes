@@ -27,6 +27,7 @@ logs/
 
 # Local secrets
 appsettings.Development.json
+.env
 
 # ASP.NET User Secrets (stored outside project, but harmless)
 secrets.json

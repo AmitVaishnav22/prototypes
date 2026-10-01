@@ -11,14 +11,30 @@ jobs:
 
     steps:
       - name: Trigger backend
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          WEBHOOK_SECRET: ${{ secrets.GITHUB_WEBHOOK_SECRET }}
+          REPOSITORY: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
+          set -euo pipefail
+
+          payload=$(jq -n \
+            --arg repository "$REPOSITORY" \
+            --arg branch "$BRANCH" \
+            --arg commit "$GITHUB_SHA" \
+            --arg message "$COMMIT_MESSAGE" \
+            '{repository: $repository, branch: $branch, commit: $commit, message: $message}')
+
+          signature="sha256=$(printf '%s' "$payload" \
+            | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" -r \
+            | cut -d' ' -f1)"
+
           curl --fail-with-body --silent --show-error \
-            -X POST "${{ secrets.BASE_URL }}/newsletter/github-release" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_WEBHOOK_SECRET }}" \
+            -X POST "$BASE_URL/newsletter/github-release" \
             -H "Content-Type: application/json" \
-            -d '{
-              "repository":"${{ github.repository }}",
-              "branch":"${{ github.ref_name }}",
-              "commit":"${{ github.sha }}",
-              "message":"${{ github.event.head_commit.message }}"
-            }'
+            -H "X-GitHub-Event: push" \
+            -H "X-GitHub-Delivery: $GITHUB_SHA" \
+            -H "X-Hub-Signature-256: $signature" \
+            --data-binary "$payload"
