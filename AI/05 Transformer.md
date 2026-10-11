@@ -2,7 +2,7 @@
 
 How the Transformer architecture lets LLMs understand relationships between words.
 
-## Mind map
+## Mind mapp
 
 ```mermaid
 mindmap
